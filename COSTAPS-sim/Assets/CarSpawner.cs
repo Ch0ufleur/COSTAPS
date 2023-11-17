@@ -14,6 +14,16 @@ public class PrefabSpawner : MonoBehaviour
 
     void SpawnPrefab()
     {
+        // Cast a ray forward from the object's position in the x direction
+        Ray ray = new Ray(transform.position, transform.right);
+        RaycastHit hit;
+
+        // If the ray hits an object within detectionDistance
+        if (Physics.Raycast(ray, out hit, 10))
+        {
+            return;
+        }
+
         // Instantiate the prefab at the position of the GameObject
         Instantiate(prefab, transform.position, transform.rotation);
     }

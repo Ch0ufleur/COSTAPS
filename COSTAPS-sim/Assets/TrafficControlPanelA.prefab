@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 9176860695754044169}
   m_Layer: 0
   m_Name: TrafficControlPanelA
-  m_TagString: Untagged
+  m_TagString: controlPanel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -258,4 +258,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NorthBound: {fileID: 3455534438317849310}
   SouthBound: {fileID: 2604819974937004369}
+  Allowed: {fileID: 0}
+  Denied: {fileID: 0}
+  SlowDown: {fileID: 0}
   PlcCommandReceiver: {fileID: 0}
+  NorthSpawner: {fileID: 0}
+  SouthSpawner: {fileID: 0}
+  state: 2
