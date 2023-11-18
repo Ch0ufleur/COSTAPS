@@ -105,7 +105,8 @@ def run_a_few_calls(client: ModbusTcpClient):
     rr = client.read_holding_registers(0, 1, slave=1)
     print(rr.registers)
 
-    rr = client.write_register(0, 3, slave=1)
+    #rr = client.write_register(0, 3, slave=1)
+    rr = client.write_registers(0, [1,0,0,0,0,1], slave=1)
     print(rr)
 
     # assert len(rr.bits) == 8
