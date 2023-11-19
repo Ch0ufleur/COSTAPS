@@ -4,5 +4,5 @@ using UnityEngine;
 
 public enum PanelState
 {
-    NorthBound, SouthBound, DenyAll, AllowAll
+    NorthBound, SouthBound, DenyAll, AllowAll, NorthBoundYellow, SouthBoundYellow, YellowParty
 }

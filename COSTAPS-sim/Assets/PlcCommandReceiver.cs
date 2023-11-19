@@ -17,7 +17,7 @@ public class PlcCommandReceiver : MonoBehaviour
     private TcpClient connectedTcpClient;
 
     public string plcIp = "127.0.0.1";
-    public int plcPort = 502;
+    public int plcPort = 50242;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +31,7 @@ public class PlcCommandReceiver : MonoBehaviour
     {
         try
         {
-            // Create listener on port 502.          
+            // Create listener on port 50242.          
             tcpListener = new TcpListener(IPAddress.Parse(plcIp), plcPort);
             tcpListener.Start();
             Byte[] bytes = new Byte[1024];

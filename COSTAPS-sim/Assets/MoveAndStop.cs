@@ -25,8 +25,33 @@ public class MoveAndStop : MonoBehaviour
         // If the ray hits an object within detectionDistance
         if (Physics.Raycast(ray, out hit, detectionDistance))
         {
-            // Decelerate
-            speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime);
+            if(hit.collider.gameObject.GetComponent<StopLineColliderControler>() != null)
+            {
+                if (hit.collider.gameObject.GetComponent<StopLineColliderControler>().stopLineState == StopLineState.Stop)
+                {
+                    speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime);
+                }
+                else if (hit.collider.gameObject.GetComponent<StopLineColliderControler>().stopLineState == StopLineState.Slow)
+                {
+                    if (hit.distance < detectionDistance / 2)
+                    {
+                        speed = Mathf.MoveTowards(speed, initialSpeed, acceleration * Time.fixedDeltaTime);
+                    }
+                    else
+                    {
+                        speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime * detectionDistance);
+                    }
+                }
+                else
+                {
+                    speed = Mathf.MoveTowards(speed, initialSpeed, acceleration * Time.fixedDeltaTime);
+                }
+            }
+            else
+            {
+                speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime);
+            }
+
         }
         else
         {
