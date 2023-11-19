@@ -1,35 +1,4 @@
 #!/usr/bin/env python3
-"""Pymodbus Synchronous Client Example.
-
-An example of a single threaded synchronous client.
-
-usage::
-
-    client_sync.py [-h] [-c {tcp,udp,serial,tls}]
-                    [-f {ascii,binary,rtu,socket,tls}]
-                    [-l {critical,error,warning,info,debug}] [-p PORT]
-                    [--baudrate BAUDRATE] [--host HOST]
-
-    -h, --help
-        show this help message and exit
-    -c, --comm {tcp,udp,serial,tls}
-        set communication, default is tcp
-    -f, --framer {ascii,binary,rtu,socket,tls}
-        set framer, default depends on --comm
-    -l, --log {critical,error,warning,info,debug}
-        set log level, default is info
-    -p, --port PORT
-        set port
-    --baudrate BAUDRATE
-        set serial device baud rate
-    --host HOST
-        set host, default is 127.0.0.1
-
-The corresponding server must be started before e.g. as:
-
-    python3 server_sync.py
-
-"""
 import argparse
 import logging
 import time
@@ -42,21 +11,18 @@ from pymodbus.client import (
     ModbusTlsClient
 )
 
-# from .helper import get_certificate, get_commandline
-
-
 logging.basicConfig()
 _logger = logging.getLogger(__file__)
 _logger.setLevel("DEBUG")
 
 
-def setup_sync_client(description=None):
+def setup_sync_client(args):
     """Run client setup."""
     _logger.info("### Create client object")
-    if "tcp" == "tcp":
+    if args.comm == "tcp":
         client = ModbusTcpClient(
-            host="127.0.0.1",
-            port="502",
+            host=args.host,
+            port=args.port,
             # Common optional parameters:
             # framer=args.framer,
             # timeout=args.timeout,
@@ -67,12 +33,11 @@ def setup_sync_client(description=None):
             # TCP setup parameters
             #    source_address=("localhost", 0),
         )
-    # elif args.comm == "tls":  # pragma no cover
+    # elif args.comm == "tls":
     #     client = ModbusTlsClient(
     #         args.host,
     #         port=args.port,
     #         # Common optional parameters:
-    #         framer=args.framer,
     #         timeout=args.timeout,
     #         #    retries=3,
     #         #    retry_on_empty=False,
@@ -87,7 +52,7 @@ def setup_sync_client(description=None):
     #     )
     return client
 
-def run_a_few_calls(client: ModbusTcpClient):
+def run_a_few_test_calls(client: ModbusTcpClient):
     """Test connection works."""
     # rr = client.read_coils(32, 1, slave=1)
     rr = client.read_holding_registers(0, 1, slave=1)
@@ -140,7 +105,6 @@ def logic_sim1(client: ModbusTcpClient):
             print(rr)
 
             currentStatus = TrafficLightStates.NORTBOUND_GREEN
-            pastStatus = TrafficLightStates.INITIALIZING
 
             _logger.info("### Sleeping ...")
             time.sleep(5)
@@ -181,7 +145,7 @@ def logic_sim1(client: ModbusTcpClient):
                 currentStatus = TrafficLightStates.NORTBOUND_GREEN
             else:
                 currentStatus = TrafficLightStates.SOUTHBOUND_GREEN
-            pastStatus = TrafficLightStates.MIDDLE_RED
+            # pastStatus = TrafficLightStates.MIDDLE_RED
 
             _logger.info("### Sleeping ...")
             time.sleep(5)
@@ -205,18 +169,120 @@ def logic_sim1(client: ModbusTcpClient):
             _logger.info("### Sleeping ...")
             time.sleep(5)
 
+def logic_sim2(client: ModbusTcpClient):
+    class TrafficLightStates:
+        INITIALIZING = 1
+        NORTH_SOUTH_GREEN = 2
+        NORTH_SOUTH_YELLOW = 3
+        ALL_RED = 4
+        EAST_WEST_GREEN = 5
+        EAST_WEST_YELLOW = 6
+
+    # class TrafficLightValues:
+        
+    first_trafficlight_id = 0
+    second_trafficlight_id = 1
+
+    currentStatus = TrafficLightStates.INITIALIZING
+    pastStatus = None
+
+    while(True):
+        if(currentStatus == TrafficLightStates.INITIALIZING):
+            _logger.info("### Initializing")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.NORTH_SOUTH_GREEN
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.NORTH_SOUTH_GREEN):
+            _logger.info("### North-South green")
+            rr = client.write_registers(first_trafficlight_id, [1, 0, 0, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.NORTH_SOUTH_YELLOW
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.NORTH_SOUTH_YELLOW):
+            _logger.info("### North-South yellow")
+            rr = client.write_registers(first_trafficlight_id, [0, 1, 0, 0, 1, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.ALL_RED
+            pastStatus = TrafficLightStates.NORTH_SOUTH_YELLOW
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.ALL_RED):
+            _logger.info("### All red")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+
+            # currentStatus = TrafficLightStates.EAST_WEST_GREEN
+
+            if pastStatus == TrafficLightStates.EAST_WEST_YELLOW:
+                currentStatus = TrafficLightStates.NORTH_SOUTH_GREEN
+            else:
+                currentStatus = TrafficLightStates.EAST_WEST_GREEN
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.EAST_WEST_GREEN):
+            _logger.info("### East-West green")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [1, 0, 0, 1, 0, 0], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.EAST_WEST_YELLOW
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.EAST_WEST_YELLOW):
+            _logger.info("### East-West yellow")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 1, 0, 0, 1, 0], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.ALL_RED
+            pastStatus = TrafficLightStates.EAST_WEST_YELLOW
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+parser = argparse.ArgumentParser(prog='Client Modbus')
+parser.add_argument('--host', default="127.0.0.1")
+parser.add_argument('--port', default="502")
+parser.add_argument('--sim', choices=['sim1', 'sim2'], required=True)
+parser.add_argument('--comm', choices=['tcp', 'tsl'], required=True)
+args = parser.parse_args()
+# print(args.host, args.port, args.sim, args.comm)
 
 #"""Combine setup and run."""
-testclient = setup_sync_client()
-# run_sync_client(testclient, modbus_calls=run_a_few_calls)
-
+testclient = setup_sync_client(args)
 #"""Run sync client."""
 _logger.info("### Client starting")
 testclient.connect()
-# if run_a_few_calls:
-#     run_a_few_calls(testclient)
-
-logic_sim1(testclient)
-
+# run_a_few_test_calls(testclient)
+if args.sim == "sim1":
+    logic_sim1(testclient)
+elif args.sim == "sim2":
+    logic_sim2(testclient)
 testclient.close()
 _logger.info("### End of Program")

@@ -12,13 +12,13 @@ def send_tcp_request(address, values):
     plc_json = {
         "id": address,
         "states": [
-            ## Northbound
+            ## Northbound - East
             {
                 "green": values[0],
                 "yellow": values[1],
                 "red": values[2]
             },
-            ## Southbound
+            ## Southbound - West
             {
                 "green": values[3],
                 "yellow": values[4],
