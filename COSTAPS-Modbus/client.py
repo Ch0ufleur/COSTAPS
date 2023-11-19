@@ -57,7 +57,7 @@ def setup_sync_client(description=None):
     if "tcp" == "tcp":
         client = ModbusTcpClient(
             host="127.0.0.1",
-            port="502",
+            port="1502",
             # Common optional parameters:
             # framer=args.framer,
             # timeout=args.timeout,
@@ -103,15 +103,15 @@ def run_a_few_calls(client: ModbusTcpClient):
     """Test connection works."""
     # rr = client.read_coils(32, 1, slave=1)
     rr = client.read_holding_registers(0, 1, slave=1)
-    print(rr.registers)
+    #print(rr.registers)
 
     #rr = client.write_register(0, 3, slave=1)
     rr = client.write_registers(0, [1,0,0,0,0,1], slave=1)
-    print(rr)
+    #print(rr)
 
     # assert len(rr.bits) == 8
     rr = client.read_holding_registers(0, 1, slave=1)
-    print(rr.registers)
+    #print(rr.registers)
     # assert rr.registers[0] == 17
     # assert rr.registers[1] == 17
 

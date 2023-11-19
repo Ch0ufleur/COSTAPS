@@ -60,5 +60,5 @@ identity.ProductName = 'Modbus Server'
 identity.ModelName = 'Modbus Server'
 
 # Start the Modbus TCP server
-asyncio.run(StartAsyncTcpServer(store, identity=identity, address=("0.0.0.0", 502)), debug=True)   # Listening on all interfaces on port 502
+asyncio.run(StartAsyncTcpServer(store, identity=identity, address=("127.0.0.1", 1502)), debug=True)   # Listening on all interfaces on port 502
 # To stop the server, use Ctrl+C or add your custom logic to stop it

@@ -16,9 +16,6 @@ public class PlcCommandReceiver : MonoBehaviour
     private Thread tcpListenerThread;
     private TcpClient connectedTcpClient;
 
-    public string plcIp = "127.0.0.1";
-    public int plcPort = 50242;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -31,25 +28,26 @@ public class PlcCommandReceiver : MonoBehaviour
     {
         try
         {
-            // Create listener on port 50242.          
-            tcpListener = new TcpListener(IPAddress.Parse(plcIp), plcPort);
+            // Create listener on localhost port 8052. 			
+            tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 12345);
             tcpListener.Start();
+            Debug.Log("Server is listening");
             Byte[] bytes = new Byte[1024];
             while (true)
             {
                 using (connectedTcpClient = tcpListener.AcceptTcpClient())
                 {
-                    // Get a stream object for reading                  
+                    // Get a stream object for reading 					
                     using (NetworkStream stream = connectedTcpClient.GetStream())
                     {
                         int length;
-                        // Read incoming stream into byte array.                  
+                        // Read incomming stream into byte arrary. 						
                         while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                         {
-                            var incomingData = new byte[length];
-                            Array.Copy(bytes, 0, incomingData, 0, length);
-                            // Convert byte array to string message.                        
-                            string clientMessage = Encoding.ASCII.GetString(incomingData);
+                            var incommingData = new byte[length];
+                            Array.Copy(bytes, 0, incommingData, 0, length);
+                            // Convert byte array to string message. 							
+                            string clientMessage = Encoding.ASCII.GetString(incommingData);
                             Debug.Log("client message received as: " + clientMessage);
                         }
                     }
