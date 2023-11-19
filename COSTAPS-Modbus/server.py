@@ -12,11 +12,13 @@ def send_tcp_request(address, values):
     plc_json = {
         "id": address,
         "states": [
+            ## Northbound
             {
                 "green": values[0],
                 "yellow": values[1],
                 "red": values[2]
             },
+            ## Southbound
             {
                 "green": values[3],
                 "yellow": values[4],
@@ -43,7 +45,7 @@ class CustomDataBlock(ModbusSequentialDataBlock):
         print("Address changed: " + str(address))
         print("Values changed: " + str(values))
         #send tcp request
-        send_tcp_request(address, values)
+        # send_tcp_request(address, values)
         return 
 
 # Define the Modbus slave server data
@@ -60,5 +62,5 @@ identity.ProductName = 'Modbus Server'
 identity.ModelName = 'Modbus Server'
 
 # Start the Modbus TCP server
-asyncio.run(StartAsyncTcpServer(store, identity=identity, address=("127.0.0.1", 1502)), debug=True)   # Listening on all interfaces on port 502
+asyncio.run(StartAsyncTcpServer(store, identity=identity, address=("127.0.0.1", 502)), debug=True)   # Listening on all interfaces on port 502
 # To stop the server, use Ctrl+C or add your custom logic to stop it

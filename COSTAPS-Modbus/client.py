@@ -32,15 +32,14 @@ The corresponding server must be started before e.g. as:
 """
 import argparse
 import logging
+import time
 
 # --------------------------------------------------------------------------- #
 # import the various client implementations
 # --------------------------------------------------------------------------- #
 from pymodbus.client import (
-    ModbusSerialClient,
     ModbusTcpClient,
-    ModbusTlsClient,
-    ModbusUdpClient,
+    ModbusTlsClient
 )
 
 # from .helper import get_certificate, get_commandline
@@ -57,7 +56,7 @@ def setup_sync_client(description=None):
     if "tcp" == "tcp":
         client = ModbusTcpClient(
             host="127.0.0.1",
-            port="1502",
+            port="502",
             # Common optional parameters:
             # framer=args.framer,
             # timeout=args.timeout,
@@ -88,36 +87,136 @@ def setup_sync_client(description=None):
     #     )
     return client
 
-
-def run_sync_client(client, modbus_calls=None):
-    """Run sync client."""
-    _logger.info("### Client starting")
-    client.connect()
-    if modbus_calls:
-        modbus_calls(client)
-    client.close()
-    _logger.info("### End of Program")
-
-
 def run_a_few_calls(client: ModbusTcpClient):
     """Test connection works."""
     # rr = client.read_coils(32, 1, slave=1)
     rr = client.read_holding_registers(0, 1, slave=1)
-    #print(rr.registers)
+    print(rr.registers)
 
-    #rr = client.write_register(0, 3, slave=1)
-    rr = client.write_registers(0, [1,0,0,0,0,1], slave=1)
-    #print(rr)
+    rr = client.write_register(0, 3, slave=1)
+    print(rr)
+
+    rr = client.write_registers(0, [1, 1, 3, 3, 2, 2], slave=1)
+    print(rr)
+
+    rr = client.read_holding_registers(3, 1, slave=1)
+    print(rr.registers)
 
     # assert len(rr.bits) == 8
-    rr = client.read_holding_registers(0, 1, slave=1)
-    #print(rr.registers)
+    rr = client.read_holding_registers(0, 6, slave=1)
+    print(rr.registers)
     # assert rr.registers[0] == 17
-    # assert rr.registers[1] == 17
+
+def logic_sim1(client: ModbusTcpClient):
+    class TrafficLightStates:
+        INITIALIZING = 1
+        NORTBOUND_GREEN = 2
+        MIDDLE_RED = 3
+        SOUTHBOUND_GREEN = 4
+
+    # class TrafficLightValues:
+        
+    first_trafficlight_id = 0
+    second_trafficlight_id = 1
+    third_trafficlight_id = 2
+    fourth_trafficlight_id = 3
+    fifth_trafficlight_id = 4
+
+    currentStatus = TrafficLightStates.INITIALIZING
+    pastStatus = None
+
+    while(True):
+        if(currentStatus == TrafficLightStates.INITIALIZING):
+            _logger.info("### Initializing")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(third_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fourth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fifth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.NORTBOUND_GREEN
+            pastStatus = TrafficLightStates.INITIALIZING
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.NORTBOUND_GREEN):
+            _logger.info("### Northbound green")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(third_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fourth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fifth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.MIDDLE_RED
+            pastStatus = TrafficLightStates.NORTBOUND_GREEN
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.MIDDLE_RED):
+            _logger.info("### Middle red")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(third_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fourth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fifth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+
+            if pastStatus == TrafficLightStates.SOUTHBOUND_GREEN:
+                currentStatus = TrafficLightStates.NORTBOUND_GREEN
+            else:
+                currentStatus = TrafficLightStates.SOUTHBOUND_GREEN
+            pastStatus = TrafficLightStates.MIDDLE_RED
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
+
+        elif(currentStatus == TrafficLightStates.SOUTHBOUND_GREEN):
+            _logger.info("### Southbound green")
+            rr = client.write_registers(first_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(second_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(third_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
+            print(rr)
+            rr = client.write_registers(fourth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+            rr = client.write_registers(fifth_trafficlight_id, [1, 0, 0, 0, 0, 1], slave=1)
+            print(rr)
+
+            currentStatus = TrafficLightStates.MIDDLE_RED
+            pastStatus = TrafficLightStates.SOUTHBOUND_GREEN
+
+            _logger.info("### Sleeping ...")
+            time.sleep(5)
 
 
-"""Combine setup and run."""
-testclient = setup_sync_client(
-    description="Run synchronous client."
-)
-run_sync_client(testclient, modbus_calls=run_a_few_calls)
+#"""Combine setup and run."""
+testclient = setup_sync_client()
+# run_sync_client(testclient, modbus_calls=run_a_few_calls)
+
+#"""Run sync client."""
+_logger.info("### Client starting")
+testclient.connect()
+# if run_a_few_calls:
+#     run_a_few_calls(testclient)
+
+logic_sim1(testclient)
+
+testclient.close()
+_logger.info("### End of Program")
