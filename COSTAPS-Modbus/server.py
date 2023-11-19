@@ -32,10 +32,10 @@ def send_tcp_request(address, values):
         plc_json_str = json.dumps(plc_json)
         client_socket.sendall(plc_json_str.encode())
         print(f"Sent JSON request to server: {plc_json_str}")
-
+        client_socket.close();
         # Receive the response from the server
-        response_json = client_socket.recv(1024).decode()
-        print(f"Received response from server: {response_json}")
+        # response_json = client_socket.recv(1024).decode()
+        # print(f"Received response from server: {response_json}")
 
 class CustomDataBlock(ModbusSequentialDataBlock):
     def setValues(self, address, values):
