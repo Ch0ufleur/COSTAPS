@@ -976,9 +976,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6081e02bbcf4609488aa962d3718b530, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panels: []
-  plcIp: 127.0.0.1
-  plcPort: 502
+  panels:
+  - {fileID: 1490817288}
+  - {fileID: 1194998631}
+  simulationType: 0
 --- !u!4 &784407623
 Transform:
   m_ObjectHideFlags: 0

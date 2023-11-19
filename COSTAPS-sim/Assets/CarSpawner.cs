@@ -1,8 +1,9 @@
 using UnityEngine;
+using System;
 
 public class PrefabSpawner : MonoBehaviour
 {
-    public GameObject prefab; // The prefab to spawn
+    public GameObject[] prefabs; // The prefab to spawn
     public float spawnInterval = 5f; // The interval at which the prefab will be spawned
 
     public void StartSpawning()
@@ -14,6 +15,7 @@ public class PrefabSpawner : MonoBehaviour
 
     void SpawnPrefab()
     {
+        System.Random rand = new System.Random();
         // Cast a ray forward from the object's position in the x direction
         Ray ray = new Ray(transform.position, transform.right);
         RaycastHit hit;
@@ -25,7 +27,7 @@ public class PrefabSpawner : MonoBehaviour
         }
 
         // Instantiate the prefab at the position of the GameObject
-        Instantiate(prefab, transform.position, transform.rotation);
+        Instantiate(prefabs[rand.Next(0,prefabs.Length)], transform.position, transform.rotation);
     }
 
     public void StopSpawning()

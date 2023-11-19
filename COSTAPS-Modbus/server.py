@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import logging
 import socket
@@ -8,7 +9,7 @@ from pymodbus.datastore import ModbusSequentialDataBlock, ModbusServerContext, M
 
 def send_tcp_request(address, values):
     #communication server address and port
-    server_address = ('127.0.0.1', 12345)
+    server_address = (args.host_tcp, args.port_tcp)
     plc_json = {
         "id": address,
         "states": [
@@ -46,7 +47,7 @@ class CustomDataBlock(ModbusSequentialDataBlock):
         print("Values changed: " + str(values))
         #send tcp request
         # send_tcp_request(address, values)
-        return 
+        return
 
 # Define the Modbus slave server data
 block = CustomDataBlock(0, [0] * 100)  # Create a data block with 100 registers initialized to zero
@@ -61,6 +62,14 @@ identity.VendorUrl = 'http://www.mycompany.com'
 identity.ProductName = 'Modbus Server'
 identity.ModelName = 'Modbus Server'
 
+parser = argparse.ArgumentParser(prog='Client Modbus')
+parser.add_argument('--host_modbus', default="127.0.0.1")
+parser.add_argument('--port_modbus', default=502)
+parser.add_argument('--host_tcp', default="127.0.0.1")
+parser.add_argument('--port_tcp', default=12345)
+args = parser.parse_args()
+print(args.host_modbus, args.port_modbus, args.host_tcp, args.port_tcp)
+
 # Start the Modbus TCP server
-asyncio.run(StartAsyncTcpServer(store, identity=identity, address=("127.0.0.1", 502)), debug=True)   # Listening on all interfaces on port 502
+asyncio.run(StartAsyncTcpServer(store, identity=identity, address=(args.host_modbus, args.port_modbus)), debug=True)
 # To stop the server, use Ctrl+C or add your custom logic to stop it
