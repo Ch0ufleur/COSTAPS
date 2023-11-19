@@ -56,7 +56,7 @@ def setup_sync_client(description=None):
     if "tcp" == "tcp":
         client = ModbusTcpClient(
             host="127.0.0.1",
-            port="502",
+            port="1502",
             # Common optional parameters:
             # framer=args.framer,
             # timeout=args.timeout,
