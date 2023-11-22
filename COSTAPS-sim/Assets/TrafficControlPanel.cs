@@ -40,6 +40,10 @@ public class TrafficControlPanel : MonoBehaviour
 
     public void UpdateState(PanelState state)
     {
+        if(this.state == state)
+        {
+            return;
+        }
         this.state = state;
         ChangeInternalMaterials();
         foreach(StopLineColliderControler c in StopLineColliderControlers)

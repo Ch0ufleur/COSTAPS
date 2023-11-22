@@ -71,7 +71,7 @@ public class PlcCommandReceiver : MonoBehaviour
         MainThreadDispatcher.Execute(() =>
         {
             ReceivedModbusModel model = ReceivedModbusModel.FromJson(clientMessage);
-            model.id--; // le genre de chose qu'on touche pas même si on comprend pas pourquoi
+            // model.id--; // le genre de chose qu'on touche pas même si on comprend pas pourquoi
             AdaptPanelStates(model);
         });
     }
@@ -86,7 +86,18 @@ public class PlcCommandReceiver : MonoBehaviour
         }
         if(simulationType == SimulationType.Crossway)
         {
-            
+            if (model.states[0].red == 1)
+            {
+                newState = PanelState.DenyAll;
+            }
+            else if (model.states[0].green == 1)
+            {
+                newState = PanelState.AllowAll;
+            }
+            else
+            {
+                newState = PanelState.YellowParty;
+            }
 
         }
         if (simulationType == SimulationType.Bridge)

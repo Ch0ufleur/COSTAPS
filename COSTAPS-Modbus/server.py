@@ -46,7 +46,7 @@ class CustomDataBlock(ModbusSequentialDataBlock):
         print("Address changed: " + str(address))
         print("Values changed: " + str(values))
         #send tcp request
-        # send_tcp_request(address, values)
+        send_tcp_request(address, values)
         return
 
 # Define the Modbus slave server data

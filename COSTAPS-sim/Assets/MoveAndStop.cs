@@ -39,7 +39,7 @@ public class MoveAndStop : MonoBehaviour
                     }
                     else
                     {
-                        speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime * detectionDistance);
+                        speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime * (detectionDistance/3));
                     }
                 }
                 else
