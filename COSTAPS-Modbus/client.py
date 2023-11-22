@@ -59,10 +59,11 @@ def run_a_few_test_calls(client: ModbusTcpClient):
     print(rr.registers)
 
     rr = client.write_register(0, 3, slave=1)
-    print(rr)
+    print(rr.isError())
 
     rr = client.write_registers(0, [1, 1, 3, 3, 2, 2], slave=1)
     print(rr)
+    # print(rr.)
 
     rr = client.read_holding_registers(3, 1, slave=1)
     print(rr.registers)
@@ -79,13 +80,11 @@ def logic_sim1(client: ModbusTcpClient):
         MIDDLE_RED = 3
         SOUTHBOUND_GREEN = 4
 
-    # class TrafficLightValues:
-        
-    first_trafficlight_id = 0
-    second_trafficlight_id = 1
-    third_trafficlight_id = 2
-    fourth_trafficlight_id = 3
-    fifth_trafficlight_id = 4
+    first_trafficlight_id = 0 * 6
+    second_trafficlight_id = 1 * 6
+    third_trafficlight_id = 2 * 6
+    fourth_trafficlight_id = 3 * 6
+    fifth_trafficlight_id = 4 * 6
 
     currentStatus = TrafficLightStates.INITIALIZING
     pastStatus = None
@@ -180,8 +179,8 @@ def logic_sim2(client: ModbusTcpClient):
 
     # class TrafficLightValues:
         
-    first_trafficlight_id = 0
-    second_trafficlight_id = 1
+    first_trafficlight_id = 0 * 6
+    second_trafficlight_id = 1 * 6
 
     currentStatus = TrafficLightStates.INITIALIZING
     pastStatus = None
