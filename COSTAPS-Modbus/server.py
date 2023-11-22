@@ -11,7 +11,7 @@ def send_tcp_request(address, values):
     #communication server address and port
     server_address = (args.host_tcp, args.port_tcp)
     plc_json = {
-        "id": address,
+        "id": address ,
         "states": [
             ## Northbound - East
             {
@@ -42,17 +42,17 @@ def send_tcp_request(address, values):
 
 class CustomDataBlock(ModbusSequentialDataBlock):
     def setValues(self, address, values):
-        super().setValues(address, values)
-        print("Address changed: " + str(address))
+        super().setValues(address % 5, values)
+        print("Address changed: " + str(address % 5))
         print("Values changed: " + str(values))
         #send tcp request
-        # send_tcp_request(address, values)
+        send_tcp_request(address % 5, values)
         return
 
 # Define the Modbus slave server data
 block = CustomDataBlock(0, [0] * 100)  # Create a data block with 100 registers initialized to zero
 slaveContext = ModbusSlaveContext(
-                di=block, co=block, hr=block, ir=block
+                di=block, co=block, hr=block, ir=block, zero_mode=True
             )
 store = ModbusServerContext(slaves=slaveContext, single=True)
 identity = ModbusDeviceIdentification()
