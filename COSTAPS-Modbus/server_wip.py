@@ -63,7 +63,7 @@ def send_tcp_request(address, values):
     server_address = (simhost, simport)
 
     print(f"#####Sending packet to: {server_address[0]}:{server_address[1]}")
-    return
+    # return
 
     plc_json = {
         "id": address ,
@@ -90,7 +90,7 @@ def send_tcp_request(address, values):
         plc_json_str = json.dumps(plc_json)
         client_socket.sendall(plc_json_str.encode())
         print(f"Sent JSON request to server: {plc_json_str}")
-        client_socket.close();
+        client_socket.close()
         # Receive the response from the server
         # response_json = client_socket.recv(1024).decode()
         # print(f"Received response from server: {response_json}")
