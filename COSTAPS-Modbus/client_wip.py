@@ -59,9 +59,9 @@ def setup_client(description=None, cmdline=None):
     else:  # pragma no cover
         print(f"Unknown client {args.comm} selected")
         return
-    print("SIM: {args.sim}")
+    print(f"SIM: {args.sim}")
 
-    return client
+    return client, args.sim
 
 
 def run_sync_client(client, modbus_calls=None):
@@ -147,10 +147,11 @@ def main_sync(cmdline=None):
 
 async def main_async(cmdline=None):
     """Combine setup and run."""
-    client = setup_client(
+    client, sim = setup_client(
         description="Run synchronous client.", cmdline=cmdline
     )
-    await run_async_client(client, modbus_calls=sim_async.logic2)
+    logic = sim_async.logic1 if sim=="1" else sim_async.logic2
+    await run_async_client(client, modbus_calls=logic)
 
 if __name__ == "__main__":
     # main_sync()  # pragma: no cover

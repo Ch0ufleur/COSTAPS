@@ -23,7 +23,7 @@ async def logic1(client):
 
     while(True):
         if(currentStatus == TrafficLightStates.INITIALIZING):
-            _logger.info("### Initializing")
+            _logger.info("### Initializing SIM 1")
             rr = await client.write_registers(first_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
             print(rr)
             rr = await client.write_registers(second_trafficlight_id, [0, 0, 1, 1, 0, 0], slave=1)
@@ -119,7 +119,7 @@ async def logic2(client):
 
     while(True):
         if(currentStatus == TrafficLightStates.INITIALIZING):
-            _logger.info("### Initializing")
+            _logger.info("### Initializing SIM 2")
             rr = await client.write_registers(first_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)
             print(rr)
             rr = await client.write_registers(second_trafficlight_id, [0, 0, 1, 0, 0, 1], slave=1)

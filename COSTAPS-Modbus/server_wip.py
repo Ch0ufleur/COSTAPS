@@ -56,14 +56,14 @@ _logger.setLevel(logging.DEBUG)
 
 # Default
 simhost = "127.0.0.1"
-simport = "443"
+simport = 443
 
 def send_tcp_request(address, values):
     #communication server address and port
     server_address = (simhost, simport)
 
-    # print(f"#####SIM address: {server_address[0]}:{server_address[1]}")
-    # return
+    print(f"#####Sending packet to: {server_address[0]}:{server_address[1]}")
+    return
 
     plc_json = {
         "id": address ,
