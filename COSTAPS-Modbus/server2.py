@@ -52,21 +52,54 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 _logger = logging.getLogger(__file__)
 _logger.setLevel(logging.DEBUG)
 
+
+def send_tcp_request(address, values):
+    #communication server address and port
+    server_address = (args.host_tcp, args.port_tcp)
+    plc_json = {
+        "id": address ,
+        "states": [
+            ## Northbound - East
+            {
+                "green": values[0],
+                "yellow": values[1],
+                "red": values[2]
+            },
+            ## Southbound - West
+            {
+                "green": values[3],
+                "yellow": values[4],
+                "red": values[5]
+            }
+        ]
+    }
+    
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        client_socket.connect(server_address)
+
+        # Convert JSON input to a string and send it to the server
+        plc_json_str = json.dumps(plc_json)
+        client_socket.sendall(plc_json_str.encode())
+        print(f"Sent JSON request to server: {plc_json_str}")
+        client_socket.close();
+        # Receive the response from the server
+        # response_json = client_socket.recv(1024).decode()
+        # print(f"Received response from server: {response_json}")
+
+
 class CustomDataBlock(ModbusSequentialDataBlock):
 
     def getValues(self, address, count=1):
-        super().getValues(address, count)
         _logger.info("Address read: " + str(address))
-        return
+        return super().getValues(address, count)
 
 
     def setValues(self, address, values):
-        super().setValues(address, values)
         _logger.info("Address written: " + str(address))
         _logger.info("Values changed: " + str(values))
-        #send tcp request
+        # send tcp request to Unity Sim
         # send_tcp_request(address % 5, values)
-        return
+        return super().setValues(address, values)
     
 
 def setup_server(description=None, cmdline=None):
@@ -106,15 +139,6 @@ async def run_async_server(args):
     txt = f"### start ASYNC server, listening on {args.port} - {args.comm}"
     _logger.info(txt)
 
-    # datablock = CustomDataBlock(0x00, [0] * 100)
-    # context = ModbusSlaveContext(
-    #     di=datablock, co=datablock, hr=datablock, ir=datablock, zero_mode=True
-    # )
-    # single = True
-
-    # # Build data storage
-    # serverContext = ModbusServerContext(slaves=context, single=single)
-
     if args.comm == "tcp":
         address = (args.host if args.host else "0.0.0.0", args.port if args.port else 5020)
         server = await StartAsyncTcpServer(
@@ -124,6 +148,7 @@ async def run_async_server(args):
             # TBD port=
             address=address,  # listen address
             # custom_functions=[],  # allow custom handling
+            # framer=args.framer,  # The framer strategy to use
             # ignore_missing_slaves=True,  # ignore request to a missing slave
             # broadcast_enable=False,  # treat slave_id 0 as broadcast address,
             # timeout=1,  # waiting time for request to complete
@@ -138,6 +163,7 @@ async def run_async_server(args):
             identity=args.identity,  # server identify
             # custom_functions=[],  # allow custom handling
             address=address,  # listen address
+            # framer=args.framer,  # The framer strategy to use
             certfile="./certificates/pymodbus.crt", # The cert file path for TLS (used if sslctx is None)
             # sslctx=sslctx,  # The SSLContext to use for TLS (default None and auto create)
             keyfile="./certificates/pymodbus.key",  # The key file path for TLS (used if sslctx is None)
