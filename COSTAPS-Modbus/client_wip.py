@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 import asyncio
 import logging
-import time
-import helper
 
 import pymodbus.client as ModbusClient
 from pymodbus import (
     pymodbus_apply_logging_config,
 )
 
+import helper
+import sim_async
+
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 _logger = logging.getLogger(__file__)
 _logger.setLevel(logging.INFO)
 
+logging.getLogger('asyncio').setLevel(logging.ERROR)
 
 def setup_client(description=None, cmdline=None):
     args = helper.get_commandline(description=description, cmdline=None)
@@ -37,7 +39,7 @@ def setup_client(description=None, cmdline=None):
             #    source_address=("localhost", 0),
         )
     elif args.comm == "tls":
-        client = ModbusClient.ModbusTlsClient(
+        client = ModbusClient.AsyncModbusTlsClient(
             args.host,
             port=args.port,
             # Common optional parameters:
@@ -57,7 +59,8 @@ def setup_client(description=None, cmdline=None):
     else:  # pragma no cover
         print(f"Unknown client {args.comm} selected")
         return
-    
+    print("SIM: {args.sim}")
+
     return client
 
 
@@ -77,7 +80,7 @@ def test_calls(client):
     rr = client.write_registers(0, [1, 1, 1, 0, 0, 1])
     print("#############")
     print({rr})
-    time.sleep(1)
+    # time.sleep(1)
     # rr = client.write_registers(0, [0, 0, 1, 0, 0, 1])
     rr = client.read_holding_registers(0, 6)
     print("#############")
@@ -147,10 +150,10 @@ async def main_async(cmdline=None):
     client = setup_client(
         description="Run synchronous client.", cmdline=cmdline
     )
-    await run_async_client(client, modbus_calls=atest_calls)
+    await run_async_client(client, modbus_calls=sim_async.logic2)
 
 if __name__ == "__main__":
-    main_sync()  # pragma: no cover
-    # asyncio.run(
-    #     main_async(), debug=True
-    # )  # pragma: no cover
+    # main_sync()  # pragma: no cover
+    asyncio.run(
+        main_async(), debug=True
+    )  # pragma: no cover

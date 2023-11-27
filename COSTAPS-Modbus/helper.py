@@ -17,6 +17,7 @@ _logger = logging.getLogger(__file__)
 def get_commandline(server=False, description=None, extras=None, cmdline=None):
     """Read and validate command line arguments."""
     parser = argparse.ArgumentParser(description=description)
+    
     parser.add_argument(
         "-c",
         "--comm",
@@ -51,12 +52,6 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
         type=str,
     )
     parser.add_argument(
-        "--baudrate",
-        help="set serial device baud rate",
-        default=9600,
-        type=int,
-    )
-    parser.add_argument(
         "--host",
         help="set host, default is 127.0.0.1",
         dest="host",
@@ -64,6 +59,22 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
         type=str,
     )
     if server:
+        parser.add_argument(
+            "-sh",
+            "--simhost",
+            help="set simulation host, default is 127.0.0.1",
+            dest="simhost",
+            default="127.0.0.1",
+            type=str,
+        )
+        parser.add_argument(
+            "-sp",
+            "--simport",
+            help="set simulation port, default is 443",
+            dest="simport",
+            default="443",
+            type=str,
+        )
         parser.add_argument(
             "--store",
             choices=["sequential", "sparse", "factory", "none"],
@@ -85,11 +96,20 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
         )
     else:
         parser.add_argument(
+            "--sim",
+            choices=["1", "2"],
+            help="set simulation scenario, default is 1",
+            dest="sim",
+            default="1",
+            type=str,
+        )
+        parser.add_argument(
             "--timeout",
             help="ADVANCED USAGE: set client timeout",
             default=10,
             type=float,
         )
+    
     if extras:  # pragma no cover
         for extra in extras:
             parser.add_argument(extra[0], **extra[1])
@@ -98,8 +118,6 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
     # set defaults
     comm_defaults = {
         "tcp": ["socket", 5020],
-        "udp": ["socket", 5020],
-        "serial": ["rtu", "/dev/ptyp0"],
         "tls": ["tls", 5020],
     }
     pymodbus_apply_logging_config(args.log.upper())
@@ -107,25 +125,8 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
     if not args.framer:
         args.framer = comm_defaults[args.comm][0]
     args.port = args.port or comm_defaults[args.comm][1]
-    if args.comm != "serial" and args.port:
+    if args.port:
         args.port = int(args.port)
     if not args.host:
         args.host = "" if server else "127.0.0.1"
     return args
-
-
-def get_certificate(suffix: str):
-    """Get example certificate."""
-    delimiter = "\\" if os.name == "nt" else "/"
-    cwd = os.getcwd().split(delimiter)[-1]
-    if cwd == "examples":
-        path = "."  # pragma no cover
-    elif cwd == "sub_examples":
-        path = "../../examples"  # pragma no cover
-    elif cwd == "test":
-        path = "../examples"
-    elif cwd == "pymodbus":
-        path = "examples"  # pragma no cover
-    else:
-        raise RuntimeError(f"**Error** Cannot find certificate path={cwd}")
-    return f"{path}/certificates/pymodbus.{suffix}"

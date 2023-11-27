@@ -35,6 +35,8 @@ The corresponding client can be started as:
 import asyncio
 import logging
 import helper
+import socket
+import json
 
 from pymodbus import __version__ as pymodbus_version
 from pymodbus.datastore import (
@@ -52,10 +54,17 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 _logger = logging.getLogger(__file__)
 _logger.setLevel(logging.DEBUG)
 
+# Default
+simhost = "127.0.0.1"
+simport = "443"
 
 def send_tcp_request(address, values):
     #communication server address and port
-    server_address = (args.host_tcp, args.port_tcp)
+    server_address = (simhost, simport)
+
+    # print(f"#####SIM address: {server_address[0]}:{server_address[1]}")
+    # return
+
     plc_json = {
         "id": address ,
         "states": [
@@ -98,7 +107,7 @@ class CustomDataBlock(ModbusSequentialDataBlock):
         _logger.info("Address written: " + str(address))
         _logger.info("Values changed: " + str(values))
         # send tcp request to Unity Sim
-        # send_tcp_request(address % 5, values)
+        send_tcp_request(address % 5, values)
         return super().setValues(address, values)
     
 
@@ -131,6 +140,11 @@ def setup_server(description=None, cmdline=None):
             "MajorMinorRevision": pymodbus_version,
         }
     )
+
+    # Set Unity simulation address
+    # simhost = args.simhost
+    # simport = args.simport
+
     return args
 
 
