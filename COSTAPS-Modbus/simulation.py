@@ -24,6 +24,7 @@ async def bridge_logic(client):
     pastStatus = None
 
     while(True):
+        sleep_interval = 6
         if(currentStatus == TrafficLightStates.INITIALIZING):
             _logger.info("### Initializing Bridge Simulation (1)")
             rr = await client.write_coils(first_trafficlight_id, [False, False, True, True, False, False], slave=1)
@@ -80,7 +81,7 @@ async def bridge_logic(client):
                 currentStatus = TrafficLightStates.SOUTHBOUND_GREEN
 
             _logger.info("### Sleeping ...")
-            time.sleep(sleep_interval)
+            time.sleep(sleep_interval * 3)
 
         elif(currentStatus == TrafficLightStates.SOUTHBOUND_GREEN):
             _logger.info("### Southbound green")
@@ -140,7 +141,7 @@ async def intersection_logic(client):
             currentStatus = TrafficLightStates.NORTH_SOUTH_YELLOW
 
             _logger.info("### Sleeping ...")
-            time.sleep(sleep_interval)
+            time.sleep(sleep_interval*3)
 
         elif(currentStatus == TrafficLightStates.NORTH_SOUTH_YELLOW):
             _logger.info("### North-South yellow")
@@ -180,7 +181,7 @@ async def intersection_logic(client):
             currentStatus = TrafficLightStates.EAST_WEST_YELLOW
 
             _logger.info("### Sleeping ...")
-            time.sleep(sleep_interval)
+            time.sleep(sleep_interval*3)
 
         elif(currentStatus == TrafficLightStates.EAST_WEST_YELLOW):
             _logger.info("### East-West yellow")

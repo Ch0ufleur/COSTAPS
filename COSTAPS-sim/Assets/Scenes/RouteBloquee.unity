@@ -751,7 +751,7 @@ MonoBehaviour:
   - {fileID: 5934987394327871257, guid: ea7d9b4769932a5459048577033a426c, type: 3}
   - {fileID: 3269661792091302595, guid: c5d8b09c0f6ab494ba2871febc33dd81, type: 3}
   spawnInterval: 3
-  limit: 1
+  limit: 25
 --- !u!4 &838388066
 Transform:
   m_ObjectHideFlags: 0
@@ -2065,7 +2065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9176860695754044169, guid: b1db3f89358a896489420a0275e5b0e9, type: 3}
       propertyPath: state
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9176860695754044169, guid: b1db3f89358a896489420a0275e5b0e9, type: 3}
       propertyPath: Denied

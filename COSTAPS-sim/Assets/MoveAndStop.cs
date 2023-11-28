@@ -20,11 +20,11 @@ public class MoveAndStop : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log(lifeTime);
-        if (EditorApplication.isPlaying)
+        Debug.Log(lifeTime);/*
+        if (EditorApplication.isPlaying && GameObject.Find("PLCCommandReceiver").GetComponent<PlcCommandReceiver>().simulationType == SimulationType.Grocery)
         {
             EditorApplication.isPlaying = false;
-        }
+        }*/
     }
 
     void FixedUpdate()
