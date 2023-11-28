@@ -97,7 +97,7 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
     else:
         parser.add_argument(
             "--sim",
-            choices=["1", "2"],
+            choices=["1", "2", "3"],
             help="set simulation scenario, default is 1",
             dest="sim",
             default="1",
