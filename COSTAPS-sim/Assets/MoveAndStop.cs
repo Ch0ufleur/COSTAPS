@@ -1,4 +1,6 @@
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class MoveAndStop : MonoBehaviour
 {
@@ -6,7 +8,7 @@ public class MoveAndStop : MonoBehaviour
     public float deceleration = 0.5f; // The rate of deceleration when an object is detected
     public float acceleration = 0.5f; // The rate of acceleration when no object is detected
     public float detectionDistance = 5f; // The distance at which the raycast can detect objects
-
+    private float lifeTime = 0;
     private float speed; // The current speed
     private Rigidbody rb;
 
@@ -16,8 +18,18 @@ public class MoveAndStop : MonoBehaviour
         speed = initialSpeed;
     }
 
+    private void OnDestroy()
+    {
+        Debug.Log(lifeTime);
+        if (EditorApplication.isPlaying)
+        {
+            EditorApplication.isPlaying = false;
+        }
+    }
+
     void FixedUpdate()
     {
+        lifeTime += Time.fixedDeltaTime;
         // Cast a ray forward from the object's position in the x direction
         Ray ray = new Ray(transform.position, transform.right);
         RaycastHit hit;
@@ -29,7 +41,16 @@ public class MoveAndStop : MonoBehaviour
             {
                 if (hit.collider.gameObject.GetComponent<StopLineColliderControler>().stopLineState == StopLineState.Stop)
                 {
-                    speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime);
+                    // Debug.Log(hit.distance);
+                    if(hit.collider.gameObject.tag == "turnPoint" && hit.distance < 6f)
+                    {
+                        // Debug.Log("turnPoint");
+                        transform.Rotate(new Vector3(0, 1, 0), 90);
+                    }
+                    else
+                    {
+                        speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime);
+                    }
                 }
                 else if (hit.collider.gameObject.GetComponent<StopLineColliderControler>().stopLineState == StopLineState.Slow)
                 {
@@ -39,7 +60,7 @@ public class MoveAndStop : MonoBehaviour
                     }
                     else
                     {
-                        speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime * (detectionDistance/3));
+                        speed = Mathf.MoveTowards(speed, 0, deceleration * Time.fixedDeltaTime * (detectionDistance/9));
                     }
                 }
                 else

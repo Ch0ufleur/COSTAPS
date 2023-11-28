@@ -5,12 +5,15 @@ public class PrefabSpawner : MonoBehaviour
 {
     public GameObject[] prefabs; // The prefab to spawn
     public float spawnInterval = 5f; // The interval at which the prefab will be spawned
+    public int limit = 30;
+    private int carCount = 0;
 
     public void StartSpawning()
     {
         StopSpawning();
         // Call the SpawnPrefab method every spawnInterval seconds
         InvokeRepeating("SpawnPrefab", spawnInterval, spawnInterval);
+
     }
 
     void SpawnPrefab()
@@ -27,7 +30,8 @@ public class PrefabSpawner : MonoBehaviour
         }
 
         // Instantiate the prefab at the position of the GameObject
-        Instantiate(prefabs[rand.Next(0,prefabs.Length)], transform.position, transform.rotation);
+        if(carCount<limit) Instantiate(prefabs[rand.Next(0,prefabs.Length)], transform.position, transform.rotation);
+        carCount++;
     }
 
     public void StopSpawning()

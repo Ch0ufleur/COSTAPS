@@ -68,10 +68,11 @@ public class PlcCommandReceiver : MonoBehaviour
 
     private void HandleTcpRequest(string clientMessage)
     {
+        Debug.Log(clientMessage);
         MainThreadDispatcher.Execute(() =>
         {
             ReceivedModbusModel model = ReceivedModbusModel.FromJson(clientMessage);
-            // model.id--; // le genre de chose qu'on touche pas même si on comprend pas pourquoi
+            //model.id--; // le genre de chose qu'on touche pas même si on comprend pas pourquoi
             AdaptPanelStates(model);
         });
     }

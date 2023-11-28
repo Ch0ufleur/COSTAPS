@@ -1,1 +1,1 @@
-public enum SimulationType { Bridge, Crossway }
+public enum SimulationType { Bridge, Crossway, Grocery }

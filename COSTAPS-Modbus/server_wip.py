@@ -56,7 +56,7 @@ _logger.setLevel(logging.DEBUG)
 
 # Default
 simhost = "127.0.0.1"
-simport = 443
+simport = 12345
 
 def send_tcp_request(address, values):
     #communication server address and port
