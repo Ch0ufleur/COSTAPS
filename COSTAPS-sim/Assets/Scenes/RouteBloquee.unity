@@ -2065,7 +2065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9176860695754044169, guid: b1db3f89358a896489420a0275e5b0e9, type: 3}
       propertyPath: state
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9176860695754044169, guid: b1db3f89358a896489420a0275e5b0e9, type: 3}
       propertyPath: Denied

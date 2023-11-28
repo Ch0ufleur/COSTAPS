@@ -101,6 +101,18 @@ public class PlcCommandReceiver : MonoBehaviour
             }
 
         }
+        if (simulationType == SimulationType.Grocery)
+        {
+            if (model.states[0].red == 1)
+            {
+                newState = PanelState.DenyAll;
+            }
+            else
+            {
+                newState = PanelState.AllowAll;
+            }
+
+        }
         if (simulationType == SimulationType.Bridge)
         {
             if (model.states[0].red == 1 && model.states[1].green == 1)
