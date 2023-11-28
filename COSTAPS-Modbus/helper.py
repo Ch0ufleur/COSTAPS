@@ -72,8 +72,8 @@ def get_commandline(server=False, description=None, extras=None, cmdline=None):
             "--simport",
             help="set simulation port, default is 443",
             dest="simport",
-            default="443",
-            type=str,
+            default=443,
+            type=int,
         )
         parser.add_argument(
             "--store",
